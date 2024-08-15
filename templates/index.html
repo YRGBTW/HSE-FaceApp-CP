@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FaceApp</title>
+</head>
+<body>
+
+    <h1 style="text-align: center;"><strong>Распознавание лиц</strong></h1>
+    <img id="video" style="display: block; margin: 0 auto;" src="" width="640" height="480">
+    <p style="text-align: center;">
+        <button onclick="openHelp()">Справка</button>
+        <button onclick="startVideo()">Запустить видеопоток</button>
+        <button onclick="openLog()">Лог-файл</button>
+        <input type="file" id="photoInput" style="display: none" accept="image/*">
+        <button onclick="uploadPhoto()">Загрузить фото</button>
+
+        <script>
+            function openHelp() {
+                window.location.href = 'http://127.0.0.1:5000/download_info';
+            }
+
+            function uploadPhoto() {
+                var input = document.getElementById('photoInput');
+                input.click();
+                input.addEventListener('change', function (event) {
+                    var file = event.target.files[0];
+                    var fileType = file.type.toLowerCase();
+
+                    if (fileType.includes('image')) {
+                        var formData = new FormData();
+                        formData.append('photo', file);
+
+                        var request = new XMLHttpRequest();
+                        request.open('POST', 'http://127.0.0.1:5000/upload', true);
+                        request.onload = function () {
+                            if (request.status === 200) {
+                                alert('Фото успешно загружено! Для обновления информации о имеющихся фото перезагрузите страницу!');
+                            } else {
+                                alert('Ошибка при загрузке фото.');
+                            }
+                        };
+                        request.send(formData);
+                    } else {
+                        alert('Пожалуйста, выберите файл в формате изображения.');
+                    }
+                });
+            }
+
+            function startVideo() {
+                var video = document.getElementById('video');
+                video.src = "{{ url_for('video_feed') }}";
+            }
+            function openLog() {
+                window.location.href = 'http://127.0.0.1:5000/download_log';
+            }
+
+        </script>
+    </p>
+</body>
+</html>
